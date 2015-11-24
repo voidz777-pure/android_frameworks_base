@@ -50,6 +50,9 @@ public class Build {
     /** The name of the underlying board, like "goldfish". */
     public static final String BOARD = getString("ro.product.board");
 
+    /** The build Pure version */
+    public static final String PURE = getString("ro.pure.version");
+
     /**
      * The name of the instruction set (CPU type + ABI convention) of native code.
      *
