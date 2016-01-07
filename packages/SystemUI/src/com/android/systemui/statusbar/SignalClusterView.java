@@ -140,9 +140,14 @@ public class SignalClusterView
 
     public void setSecurityController(SecurityController sc) {
         if (DEBUG) Log.d(TAG, "SecurityController=" + sc);
+        if (sc == null && mSC != null) {
+            mSC.removeCallback(this);
+        }
         mSC = sc;
-        mSC.addCallback(this);
-        mVpnVisible = mSC.isVpnEnabled() && !mBlockVpn;
+        if (mSC != null) {
+            mSC.addCallback(this);
+            mVpnVisible = mSC.isVpnEnabled() && !mBlockVpn;
+        }
     }
 
     @Override
@@ -202,8 +207,10 @@ public class SignalClusterView
         post(new Runnable() {
             @Override
             public void run() {
-                mVpnVisible = mSC.isVpnEnabled() && !mBlockVpn;
-                apply();
+                if (mSC != null) {
+                    mVpnVisible = mSC.isVpnEnabled() && !mBlockVpn;
+                    apply();
+                }
             }
         });
     }
