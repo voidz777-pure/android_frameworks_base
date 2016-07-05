@@ -132,9 +132,10 @@ public final class ShutdownThread extends Thread {
      * @param confirm true if user confirmation is needed before shutting down.
      */
     public static void shutdown(final Context context, boolean confirm) {
+        final Context uiContext = getUiContext(context);
         mReboot = false;
         mRebootSafeMode = false;
-        shutdownInner(getUiContext(context), confirm);
+        shutdownInner(uiContext, confirm);
     }
 
     private static boolean isAdvancedRebootPossible(final Context context) {
@@ -189,13 +190,13 @@ public final class ShutdownThread extends Thread {
         if (confirm) {
             final CloseDialogReceiver closer = new CloseDialogReceiver(context);
             final boolean advancedReboot = isAdvancedRebootPossible(context);
-            final Context mUiContext = getUiContext(context);
+            final Context uiContext = getUiContext(context);
 
             if (sConfirmDialog != null) {
                 sConfirmDialog.dismiss();
                 sConfirmDialog = null;
             }
-            AlertDialog.Builder confirmDialogBuilder = new AlertDialog.Builder(mUiContext)
+            AlertDialog.Builder confirmDialogBuilder = new AlertDialog.Builder(uiContext)
                     .setTitle(mRebootSafeMode
                             ? com.android.internal.R.string.reboot_safemode_title
                             : showRebootOption
@@ -291,11 +292,12 @@ public final class ShutdownThread extends Thread {
      * @param confirm true if user confirmation is needed before shutting down.
      */
     public static void reboot(final Context context, String reason, boolean confirm) {
+        final Context uiContext = getUiContext(context);
         mReboot = true;
         mRebootSafeMode = false;
         mRebootUpdate = false;
         mRebootReason = reason;
-        shutdownInner(getUiContext(context), confirm);
+        shutdownInner(uiContext, confirm);
     }
 
     /**
@@ -810,9 +812,11 @@ public final class ShutdownThread extends Thread {
     }
 
     private static Context getUiContext(Context context) {
-        Context mUiContext = null;
-        mUiContext = ThemeUtils.createUiContext(context);
-        mUiContext.setTheme(android.R.style.Theme_DeviceDefault_Light_DarkActionBar);
-        return mUiContext != null ? mUiContext : context;
+        Context uiContext = null;
+        if (context != null) {
+            uiContext = ThemeUtils.createUiContext(context);
+            uiContext.setTheme(android.R.style.Theme_DeviceDefault_Light_DarkActionBar);
+        }
+        return uiContext != null ? uiContext : context;
     }
 }
