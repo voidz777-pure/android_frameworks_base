@@ -1752,6 +1752,7 @@ public class NotificationManagerService extends SystemService {
         }
 
         private void enforcePolicyAccess(String pkg, String method) {
+            checkCallerIsSameApp(pkg);
             if (!checkPolicyAccess(pkg)) {
                 Slog.w(TAG, "Notification policy access denied calling " + method);
                 throw new SecurityException("Notification policy access denied");
@@ -3320,6 +3321,10 @@ public class NotificationManagerService extends SystemService {
         if (isCallerSystem()) {
             return;
         }
+        checkCallerIsSameApp(pkg);
+    }
+
+    private static void checkCallerIsSameApp(String pkg) {
         final int uid = Binder.getCallingUid();
         try {
             ApplicationInfo ai = AppGlobals.getPackageManager().getApplicationInfo(
